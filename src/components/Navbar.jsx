@@ -6,6 +6,7 @@ const navLinks = [
   { label: "Beaches", page: "beaches" },
   { label: "Forest", page: "forest" },
   { label: "Heritage", page: "heritage" },
+  { label: "Personalities", page: "personalities" }
 ];
 
 export default function Navbar({ currentPage, onNavigate }) {
@@ -28,8 +29,8 @@ export default function Navbar({ currentPage, onNavigate }) {
     <nav
       className={`fixed top-0 left-0 w-full z-50 h-20 flex items-center transition-all duration-500 ${
         scrolled 
-          ? "bg-[#2D1B1E]/75 backdrop-blur-md border-b border-amber-500/10 shadow-2xl"
-          : "bg-transparent border-b border-transparent shadow-none"
+          ? "bg-[#2D1B1E]/75 backdrop-blur-md border-b border-amber-500/10 shadow-2xl" 
+          : "bg-transparent border-b border-transparent shadow-none" 
       }`}
     >
       <div className="w-full max-w-7xl mx-auto px-6 flex items-center justify-between relative">
@@ -101,7 +102,7 @@ export default function Navbar({ currentPage, onNavigate }) {
             menuOpen ? "opacity-100 scale-y-100 visible" : "opacity-0 scale-y-95 invisible pointer-events-none"
           }`}
         >
-          <div className="bg-[#140a0e] border border-amber-500/20 rounded-2xl mx-4 my-2 px-4 py-4 flex flex-col gap-1 shadow-2xl backdrop-blur-lg">
+          <div className="bg-[#2D1B1E]/95 border border-amber-500/20 rounded-2xl mx-4 my-2 px-4 py-4 flex flex-col gap-1 shadow-2xl backdrop-blur-lg">
             {navLinks.map((link) => (
               <button
                 key={link.page}

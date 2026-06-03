@@ -139,7 +139,7 @@ export default function Home({ onNavigate }) {
     <div className="w-full relative">
       
       {/* ── HERO SECTION ── */}
-      <section className="relative flex items-center justify-center overflow-hidden min-h-[85vh] lg:min-h-screen -mt-24 pt-24">
+      <section className="relative flex items-center justify-center overflow-hidden min-h-[85vh] lg:min-h-screen -mt-24 pt-32">
         {/* Background Image Container */}
         <div className="absolute inset-0 z-0">
           <img

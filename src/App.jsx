@@ -8,6 +8,7 @@ const Temples  = lazy(() => import("./pages/Temples"));
 const Beaches  = lazy(() => import("./pages/Beaches"));
 const Forest   = lazy(() => import("./pages/Forest"));
 const Heritage = lazy(() => import("./pages/Heritage"));
+const Personalities = lazy(() => import("./pages/Personalities"));
 
 function PageLoader() {
   return (
@@ -32,6 +33,7 @@ const pageMeta = {
   beaches:  { title: "Gujarat Beaches — Arabian Sea Coastline", desc: "1,600 km of pristine coastline — Mandvi, Diu, Chorwad and more." },
   forest:   { title: "Wildlife & Forests of Gujarat — Gir & Beyond", desc: "Gir National Park, Marine Sanctuary, Nal Sarovar — Gujarat's wild side." },
   heritage: { title: "Gujarat Heritage — UNESCO World Heritage Sites", desc: "Rani ki Vav, Champaner, Dholavira — 5,000 years of civilisation." },
+  personalities: { title: "Icons of Gujarat — Leaders, Visionaries & Innovators", desc: "Inspiring personalities who shaped India from Gujarat — Gandhi, Patel, Tata, and many more." },
 };
 
 function renderPage(page, navigate) {
@@ -40,6 +42,7 @@ function renderPage(page, navigate) {
     case "beaches":  return <Beaches onNavigate={navigate} />;
     case "forest":   return <Forest  onNavigate={navigate} />;
     case "heritage": return <Heritage onNavigate={navigate} />;
+    case "personalities": return <Personalities onNavigate={navigate} />;
     default:         return <Home    onNavigate={navigate} />;
   }
 }
@@ -76,18 +79,22 @@ export default function App() {
     // Updated to global premium background color [#1E0F12]
     <div className="min-h-screen flex flex-col overflow-x-hidden bg-[#1E0F12] text-white">
       
-      {/* Fixed Navbar component */}
-      <Navbar currentPage={currentPage} onNavigate={navigate} />
+      {/* 💡 CHANGE 1: Top Navbar conditionally hidden for personalities page */}
+      {currentPage !== "personalities" && (
+        <Navbar currentPage={currentPage} onNavigate={navigate} />
+      )}
 
       {/* Main Container */}
-      <main className="flex-grow pt-24 relative z-10 w-full max-w-full">
+      <main className="flex-grow relative z-10 w-full bg-[#1E0F12] max-w-full">
         <Suspense fallback={<PageLoader />}>
           {renderPage(currentPage, navigate)}
         </Suspense>
       </main>
 
-      {/* Footer Element */}
-      <Footer onNavigate={navigate} />
+      {/* 💡 CHANGE 2: Footer conditionally hidden for personalities page */}
+      {currentPage !== "personalities" && (
+        <Footer onNavigate={navigate} />
+      )}
     </div>
   );
 }
