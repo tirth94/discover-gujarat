@@ -166,20 +166,20 @@ export default function Temples() {
       </section>
 
       {/* ── FLOATING STATS ── */}
-      <section className="relative z-20 -mt-16 max-w-6xl mx-auto px-6 pb-20">
+      <section className="relative z-20 -mt-16 max-w-6xl mx-auto px-6 pb-12">
         <Reveal delay={400}>
-          <div className="ag-glass p-8 md:p-12 rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/10 bg-[#28161A]/80 backdrop-blur-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 divide-y md:divide-y-0 md:divide-x divide-white/10">
+          <div className="ag-glass p-6 md:p-8 rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/10 bg-[#28161A]/80 backdrop-blur-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 divide-y md:divide-y-0 md:divide-x divide-white/10">
               {[
                 { icon: "🛕", label: "50+", sub: "Major Temples", desc: "Across the entire state" },
                 { icon: "🕉️", label: "3", sub: "Jyotirlingas", desc: "Out of 12 in India" },
                 { icon: "🏔️", label: "900+", sub: "Jain Shrines", desc: "Atop Palitana hills" },
               ].map((s) => (
-                <div key={s.label} className="flex flex-col items-center text-center pt-8 md:pt-0 first:pt-0">
-                  <div className="text-4xl mb-4 bg-white/5 w-16 h-16 rounded-full flex items-center justify-center border border-white/5 shadow-inner">{s.icon}</div>
-                  <div className="text-white text-4xl font-bold mb-2" style={{ fontFamily: "Playfair Display, serif" }}>{s.label}</div>
-                  <div className="text-[#C5A880] font-mono text-xs uppercase tracking-widest mb-2">{s.sub}</div>
-                  <div className="text-white/40 text-sm font-light">{s.desc}</div>
+                <div key={s.label} className="flex flex-col items-center text-center pt-6 md:pt-0 first:pt-0">
+                  <div className="text-3xl mb-3 bg-white/5 w-14 h-14 rounded-full flex items-center justify-center border border-white/5 shadow-inner">{s.icon}</div>
+                  <div className="text-white text-3xl font-bold mb-1" style={{ fontFamily: "Playfair Display, serif" }}>{s.label}</div>
+                  <div className="text-[#C5A880] font-mono text-[10px] uppercase tracking-widest mb-1">{s.sub}</div>
+                  <div className="text-white/40 text-xs font-light">{s.desc}</div>
                 </div>
               ))}
             </div>
@@ -190,11 +190,21 @@ export default function Temples() {
       {/* ── PREMIUM LISTING ── */}
       <section className="py-24 max-w-7xl mx-auto px-6">
         <Reveal>
-          <div className="text-center mb-20">
+          <div className="text-center mb-20 flex flex-col items-center">
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6" style={{ fontFamily: "Playfair Display, serif" }}>
               Must-Visit <span className="text-gold-shimmer italic">Sacred Sites</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent mx-auto rounded-full opacity-50" />
+            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent mx-auto rounded-full opacity-50 mb-10" />
+            
+            <button 
+              onClick={() => document.getElementById('explore-district')?.scrollIntoView({ behavior: 'smooth' })}
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#C5A880]/10 border border-[#C5A880]/30 text-[#C5A880] hover:bg-[#C5A880] hover:text-[#120B0C] transition-all duration-300 font-medium tracking-wide shadow-[0_0_20px_rgba(197,168,128,0.1)] hover:shadow-[0_0_30px_rgba(197,168,128,0.4)] hover:-translate-y-1 group"
+            >
+              Explore By District
+              <svg className="w-4 h-4 transform group-hover:translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </button>
           </div>
         </Reveal>
 
@@ -208,7 +218,7 @@ export default function Temples() {
       </section>
 
       {/* ── DISTRICT WISE TEMPLES ── */}
-      <section className="py-24 max-w-[90rem] mx-auto px-6">
+      <section id="explore-district" className="py-24 max-w-[90rem] mx-auto px-6">
         <Reveal>
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-6" style={{ fontFamily: "Playfair Display, serif" }}>

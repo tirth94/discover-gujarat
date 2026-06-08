@@ -2,7 +2,8 @@
    DESTINATIONS PAGE — Gujarat Tourism
    Elite Travel Directory — 2 Column Extended Cards
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { destinationsData, destinationStats } from "../data/destinationsData";
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -36,9 +37,6 @@ function Reveal({ children, delay = 0, className = "" }) {
   );
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   CATEGORY BADGE
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 const categoryMeta = {
   HERITAGE: { color: "#C5A880", glow: "rgba(197,168,128,0.18)" },
   DESERT:   { color: "#D4A853", glow: "rgba(212,168,83,0.18)"  },
@@ -46,183 +44,181 @@ const categoryMeta = {
   URBAN:    { color: "#7B9EC8", glow: "rgba(123,158,200,0.18)" },
 };
 
-function CategoryBadge({ category }) {
-  const meta = categoryMeta[category] ?? { color: "#C5A880", glow: "rgba(197,168,128,0.15)" };
-  return (
-    <span
-      className="px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase border backdrop-blur-md"
-      style={{
-        color: meta.color,
-        background: "rgba(10,4,6,0.6)",
-        borderColor: `${meta.color}50`,
-        fontFamily: "DM Mono, monospace",
-      }}
-    >
-      {category}
-    </span>
-  );
-}
-
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   DESTINATION CARD (EXTENDED - NO IMAGE)
+   DESTINATION CARD (Personalities Style)
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function DestinationCard({ dest, index }) {
+function DestinationCard({ dest, isHovered, onHover, onLeave, onOpen }) {
   const meta = categoryMeta[dest.category] ?? { color: "#C5A880", glow: "rgba(197,168,128,0.15)" };
 
   return (
-    <Reveal delay={index * 100}>
-      <article
-        id={`dest-card-${dest.id}`}
-        className="bg-[#150A0C] border border-white/5 rounded-3xl flex flex-col transition-all duration-500 hover:border-[#C5A880]/30 shadow-2xl overflow-hidden group h-full"
+    <div
+      id={`dest-card-${dest.id}`}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      className={`relative bg-[#1A1012]/80 border border-white/[0.06] rounded-2xl p-5 flex flex-col transition-all duration-500 shadow-lg min-h-[280px] h-full ${
+        isHovered ? "border-[#C5A880]/20" : ""
+      }`}
+      style={{ zIndex: isHovered ? 20 : 1 }}
+    >
+      {/* Card image */}
+      <div className="w-full h-36 rounded-xl overflow-hidden relative mb-4 bg-[#120B0C] border border-white/[0.04]">
+        <img
+          src={dest.image}
+          alt={dest.name}
+          className="w-full h-full object-cover object-center opacity-65 transition-all duration-500"
+          style={{ filter: "sepia(20%)" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1A1012] to-transparent" />
+      </div>
+
+      <div className="flex-1 flex flex-col justify-between">
+        <div>
+          <span
+            className="text-[9px] tracking-widest uppercase block mb-1"
+            style={{ color: meta.color, fontFamily: "DM Mono, monospace" }}
+          >
+            {dest.tag}
+          </span>
+          <h3
+            className="text-xl font-bold text-[#E2D4C9] tracking-wide leading-tight"
+            style={{ fontFamily: "Playfair Display, serif" }}
+          >
+            {dest.name}
+          </h3>
+        </div>
+        <div className="flex items-center justify-between mt-4 border-t border-white/[0.05] pt-3">
+          <span
+            className="text-[10px] text-white/35"
+            style={{ fontFamily: "DM Mono, monospace" }}
+          >
+            📍 {dest.zone}
+          </span>
+          <span
+            className="text-[10px] font-medium"
+            style={{ color: meta.color, fontFamily: "DM Mono, monospace" }}
+          >
+            {dest.category}
+          </span>
+        </div>
+
+        {/* Mobile-only: direct open button */}
+        <button
+          id={`dest-read-mobile-${dest.id}`}
+          onClick={() => onOpen(dest)}
+          className="sm:hidden w-full mt-3 py-2.5 rounded-xl text-[#E2D4C9] font-bold text-xs tracking-wide cursor-pointer focus:outline-none transition-all duration-300"
+          style={{
+            background: "linear-gradient(135deg, #4A1521, #800020)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            fontFamily: "Playfair Display, serif",
+          }}
+        >
+          Read Details ➔
+        </button>
+      </div>
+
+      {/* ── Hover Preview Overlay (Desktop only) ── */}
+      <div
+        className={`absolute inset-x-[-14px] top-[-18px] rounded-2xl p-6 flex-col justify-between transition-all duration-500 ease-out transform hidden sm:flex ${
+          isHovered
+            ? "opacity-100 scale-[1.04] pointer-events-auto translate-y-0 shadow-[0_30px_70px_rgba(0,0,0,0.85)]"
+            : "opacity-0 scale-95 pointer-events-none translate-y-3"
+        }`}
+        style={{
+          background: "linear-gradient(135deg, #221619, #2D1015)",
+          border: "2px solid rgba(197,168,128,0.25)",
+          zIndex: 40,
+          minHeight: "calc(100% + 32px)",
+        }}
       >
-        {/* Text Header (Replaced Image) */}
-        <div className="relative w-full p-5 md:p-6 bg-gradient-to-br from-[#1A0C10] to-[#150A0C] border-b border-white/5 flex flex-col gap-3">
-          <div className="flex justify-between items-start">
-            <CategoryBadge category={dest.category} />
-            <div
-              className="px-3 py-1 rounded-full text-[10px] tracking-widest uppercase"
+        <div>
+          {/* Header */}
+          <div
+            className="flex justify-between items-center mb-2 text-[10px]"
+            style={{ fontFamily: "DM Mono, monospace" }}
+          >
+            <span className="uppercase tracking-widest" style={{ color: meta.color }}>{dest.category}</span>
+            <span className="text-white/35">{dest.zone}</span>
+          </div>
+
+          {/* Name */}
+          <h4
+            className="text-2xl font-bold text-[#E2D4C9] tracking-wide mb-3 leading-tight"
+            style={{ fontFamily: "Playfair Display, serif" }}
+          >
+            {dest.name}
+          </h4>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            <span
+              className="text-[9px] font-mono tracking-widest uppercase px-2.5 py-0.5 rounded border"
               style={{
-                background: "rgba(10,4,6,0.8)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "rgba(255,255,255,0.6)",
+                color: meta.color,
+                background: `${meta.color}12`,
+                borderColor: `${meta.color}20`,
                 fontFamily: "DM Mono, monospace",
               }}
             >
-              {dest.zone}
-            </div>
-          </div>
-          <div className="mt-2">
-             <span
-              className="text-[10px] tracking-widest uppercase mb-1 block"
-              style={{ color: meta.color, fontFamily: "DM Mono, monospace" }}
-            >
-              ✦ {dest.tag}
+              {dest.tag}
             </span>
-            <h3
-              className="text-white text-4xl md:text-5xl font-bold leading-tight"
-              style={{ fontFamily: "Playfair Display, serif" }}
-            >
-              {dest.name}
-            </h3>
           </div>
+
+          {/* Short desc */}
+          <p className="text-white/60 text-sm leading-relaxed font-light line-clamp-3">{dest.description}</p>
         </div>
 
-        {/* Card Body (All Content - Reduced margins/padding, Bigger Text) */}
-        <div className="flex flex-col flex-1 p-5 md:p-6 gap-6">
-          
-          {/* Overview */}
-          <div>
-            <p className="text-white/80 text-base md:text-lg leading-relaxed font-light text-justify">
-               <span className="float-left text-5xl text-[#C5A880] font-bold leading-[0.8] pr-3 pt-2" style={{ fontFamily: "Playfair Display, serif" }}>
-                 {dest.description.charAt(0)}
-               </span>
-               {dest.description.substring(1)}
-            </p>
-          </div>
-
-          {/* Highlights & Top Spot */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              className="flex items-start gap-3 p-4 rounded-2xl"
-              style={{ background: meta.glow, border: `1px solid ${meta.color}20` }}
-            >
-              <span className="text-2xl flex-shrink-0 mt-0.5">📍</span>
-              <div>
-                <span className="text-[10px] tracking-[0.2em] uppercase block mb-1 text-white/50" style={{ fontFamily: "DM Mono, monospace" }}>
-                  Top Spot
-                </span>
-                <span className="text-white text-base md:text-lg font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
-                  {dest.popularSpot}
-                </span>
-              </div>
-            </div>
-            
-            <div className="flex flex-col justify-center bg-[#1A0C10] border border-white/5 p-4 rounded-2xl">
-               <span className="text-[10px] tracking-[0.2em] uppercase block mb-2 text-white/40" style={{ fontFamily: "DM Mono, monospace" }}>
-                  Highlights
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {dest.highlights.slice(0, 3).map((h, i) => (
-                    <span
-                      key={i}
-                      className="text-xs px-3 py-1.5 rounded-full tracking-wide bg-white/5 border border-white/10 text-white/70"
-                      style={{ fontFamily: "DM Mono, monospace" }}
-                    >
-                      {h}
-                    </span>
-                  ))}
-                </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="w-full h-px bg-white/5" />
-
-          {/* History */}
-          <div>
-            <h4 className="text-2xl md:text-3xl text-[#C5A880] mb-3" style={{ fontFamily: "Playfair Display, serif" }}>History</h4>
-            <p className="text-white/70 text-base md:text-lg leading-relaxed font-light">
-              {dest.history}
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div className="w-full h-px bg-white/5" />
-
-          {/* Attractions */}
-          <div>
-            <h4 className="text-2xl md:text-3xl text-[#C5A880] mb-4" style={{ fontFamily: "Playfair Display, serif" }}>Key Attractions</h4>
-            <div className="grid grid-cols-1 gap-4">
-               {dest.attractions.map((attr, i) => (
-                 <div key={i} className="flex gap-4 items-start bg-gradient-to-r from-white/5 to-transparent border border-white/5 p-4 rounded-xl hover:border-[#C5A880]/20 transition-colors duration-300">
-                    <span className="text-[#C5A880] font-black text-3xl opacity-40 font-serif">0{i+1}</span>
-                    <div>
-                      <h5 className="text-white text-lg font-semibold mb-1" style={{ fontFamily: "Playfair Display, serif" }}>{attr.name}</h5>
-                      <p className="text-white/60 text-sm md:text-base leading-relaxed font-light">{attr.desc}</p>
-                    </div>
-                 </div>
-               ))}
-            </div>
-          </div>
-
-          {/* Spacer to push tips to bottom */}
-          <div className="flex-1" />
-
-          {/* Tips & Footer Meta */}
-          <div className="bg-[#0A0507] border border-[#C5A880]/20 rounded-2xl p-5 relative overflow-hidden mt-2">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#C5A880]/50 to-transparent" />
-             <div className="flex flex-col gap-4">
-                <div>
-                   <span className="text-[#C5A880] text-xs tracking-[0.2em] uppercase block mb-2" style={{ fontFamily: "DM Mono, monospace" }}>Travel Tip 💡</span>
-                   <p className="text-white/90 text-base md:text-lg italic font-light leading-relaxed">{dest.tips}</p>
-                </div>
-                <div className="flex justify-between items-center border-t border-white/10 pt-4">
-                   <span className="text-white/50 text-[10px] md:text-xs tracking-widest uppercase" style={{ fontFamily: "DM Mono, monospace" }}>🗓 {dest.bestTime}</span>
-                   <span className="text-[#C5A880] text-xs md:text-sm font-semibold" style={{ fontFamily: "DM Mono, monospace" }}>{dest.distance}</span>
-                </div>
-             </div>
-          </div>
-
-        </div>
-      </article>
-    </Reveal>
+        {/* CTA */}
+        <button
+          id={`dest-read-more-${dest.id}`}
+          onClick={() => onOpen(dest)}
+          className="w-full mt-4 py-3 rounded-xl text-[#E2D4C9] font-bold text-xs tracking-wide cursor-pointer focus:outline-none shadow-xl transition-all duration-300"
+          style={{
+            background: "linear-gradient(135deg, #4A1521, #800020)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            fontFamily: "Playfair Display, serif",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "linear-gradient(135deg, #5C1E2D, #9A0025)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "linear-gradient(135deg, #4A1521, #800020)"; }}
+        >
+          Read Full Guide ➔
+        </button>
+      </div>
+    </div>
   );
 }
-
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    DESTINATIONS PAGE ROOT
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Destinations() {
   const filtered = destinationsData;
+  const [hoveredCardId, setHoveredCardId] = useState(null);
+  const [selectedDest, setSelectedDest] = useState(null);
+
+  /* ── Body scroll lock when modal is open ── */
+  useEffect(() => {
+    document.body.style.overflow = selectedDest ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [selectedDest]);
+
+  /* ── Escape key closes modal ── */
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") setSelectedDest(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const openModal = useCallback((dest) => {
+    setSelectedDest(dest);
+    setHoveredCardId(null);
+  }, []);
 
   return (
     <div
       id="destinations-page"
-      className="page-enter min-h-screen"
+      className="page-enter min-h-screen text-[#E2D4C9] flex flex-col overflow-x-hidden"
       style={{ background: "#1E0F12" }}
     >
-
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           IMMERSIVE HERO
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
@@ -296,6 +292,13 @@ export default function Destinations() {
       </section>
 
       <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.95) translateY(10px); }
+          to   { opacity: 1; transform: scale(1)    translateY(0);     }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
         @keyframes slowZoom {
           from { transform: scale(1.05); }
           to   { transform: scale(1.15); }
@@ -336,7 +339,7 @@ export default function Destinations() {
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <main
         id="destinations-directory"
-        className="max-w-7xl mx-auto px-6 pb-24"
+        className="max-w-7xl mx-auto px-6 pb-24 w-full"
         role="main"
       >
         <Reveal delay={0}>
@@ -370,52 +373,22 @@ export default function Destinations() {
           </div>
         </Reveal>
 
-        {/* ── DESKTOP GRID (sm+) ── */}
+        {/* ── GRID ── */}
         {filtered.length > 0 ? (
-          <>
-            {/* 2 Cards in a Row Grid */}
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+          <Reveal delay={120}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {filtered.map((dest, index) => (
-                <DestinationCard key={dest.id} dest={dest} index={index} />
+                <DestinationCard
+                  key={dest.id}
+                  dest={dest}
+                  isHovered={hoveredCardId === dest.id}
+                  onHover={() => setHoveredCardId(dest.id)}
+                  onLeave={() => setHoveredCardId(null)}
+                  onOpen={openModal}
+                />
               ))}
             </div>
-
-            {/* ── MOBILE HORIZONTAL SNAP SLIDER ── */}
-            <div className="md:hidden w-full relative mt-8">
-              {/* Swipe Indicator */}
-              <div className="flex items-center justify-between mb-4 px-2">
-                 <div className="text-[#C5A880]/60 animate-[pulse_2s_infinite]">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                 </div>
-                 <span className="text-[#C5A880]/80 text-[10px] tracking-widest uppercase" style={{ fontFamily: "DM Mono, monospace" }}>
-                    Swipe to explore
-                 </span>
-                 <div className="text-[#C5A880]/60 animate-[pulse_2s_infinite]">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                 </div>
-              </div>
-
-              <div
-                id="destinations-mobile-slider"
-                className="flex overflow-x-auto snap-x snap-mandatory pb-6 w-full gap-4 no-scrollbar"
-              >
-                {filtered.map((dest, index) => {
-                  return (
-                    <div
-                      key={dest.id}
-                      className="w-[90vw] max-w-[400px] snap-center flex-shrink-0"
-                    >
-                       <DestinationCard dest={dest} index={index} />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </>
+          </Reveal>
         ) : (
           <Reveal delay={0}>
             <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -509,6 +482,177 @@ export default function Destinations() {
           </div>
         </Reveal>
       </main>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          DETAIL MODAL — Heritage-style popup
+          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      {selectedDest && createPortal(
+        <div
+          id="destinations-detail-modal"
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 backdrop-blur-md bg-black/60"
+        >
+          {/* Backdrop click to close */}
+          <div className="absolute inset-0 cursor-pointer" onClick={() => setSelectedDest(null)} aria-hidden="true" />
+
+          {/* Modal Panel */}
+          <div
+            className="relative z-10 w-full max-w-4xl bg-[#120B0C] rounded-[2rem] border border-[#C5A880]/20 shadow-[0_30px_70px_rgba(0,0,0,0.85)] flex flex-col md:flex-row overflow-hidden animate-fadeIn"
+            style={{ maxHeight: "88vh" }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedDest(null)}
+              className="absolute top-4 right-4 z-30 w-10 h-10 rounded-full bg-black/60 text-white/50 hover:text-[#C5A880] flex items-center justify-center border border-white/10 transition-all hover:border-[#C5A880]/30 cursor-pointer focus:outline-none"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            {/* ── Left Image Panel ── */}
+            <div className="w-full md:w-2/5 h-48 md:h-auto relative bg-[#1A1012]" style={{ minHeight: "250px" }}>
+              <img
+                src={selectedDest.image}
+                alt={selectedDest.name}
+                className="w-full h-full object-cover object-center opacity-60"
+                style={{ filter: "sepia(20%) grayscale(10%)" }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#120B0C] to-transparent" />
+              {/* Category badge */}
+              <div className="absolute top-5 left-5">
+                <span
+                  className="text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border bg-black/60"
+                  style={{ 
+                    color: categoryMeta[selectedDest.category]?.color || "#C5A880",
+                    borderColor: `${categoryMeta[selectedDest.category]?.color || "#C5A880"}40`,
+                    fontFamily: "DM Mono, monospace" 
+                  }}
+                >
+                  {selectedDest.category}
+                </span>
+              </div>
+            </div>
+
+            {/* ── Right Detail Panel ── */}
+            <div
+              className="w-full md:w-3/5 p-8 md:p-10 flex flex-col overflow-y-auto no-scrollbar relative"
+              style={{ maxHeight: "88vh" }}
+            >
+              <div className="relative z-10">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span
+                    className="text-[9px] font-mono tracking-widest uppercase px-3 py-1 rounded border"
+                    style={{
+                      color: categoryMeta[selectedDest.category]?.color || "#C5A880",
+                      background: `${categoryMeta[selectedDest.category]?.color || "#C5A880"}10`,
+                      borderColor: `${categoryMeta[selectedDest.category]?.color || "#C5A880"}25`,
+                      fontFamily: "DM Mono, monospace",
+                    }}
+                  >
+                    {selectedDest.tag}
+                  </span>
+                </div>
+
+                {/* Name */}
+                <h2
+                  className="text-3xl md:text-4xl font-bold text-white mb-1"
+                  style={{ fontFamily: "Playfair Display, serif" }}
+                >
+                  {selectedDest.name}
+                </h2>
+                <p
+                  className="text-sm font-semibold tracking-widest uppercase mb-5 font-mono"
+                  style={{ color: categoryMeta[selectedDest.category]?.color || "#C5A880", fontFamily: "DM Mono, monospace" }}
+                >
+                  {selectedDest.zone}
+                </p>
+
+                {/* Meta */}
+                <div
+                  className="text-[11px] text-white/35 flex gap-5 border-b border-white/[0.06] pb-5 mb-5 flex-wrap"
+                  style={{ fontFamily: "DM Mono, monospace" }}
+                >
+                  <span>📍 TOP SPOT: {selectedDest.popularSpot}</span>
+                  <span>🗓 BEST TIME: {selectedDest.bestTime}</span>
+                  <span>🚗 DISTANCE: {selectedDest.distance}</span>
+                </div>
+
+                {/* Full Description */}
+                <p className="text-white/70 text-sm leading-relaxed mb-6 font-light text-justify">
+                   <span className="float-left text-4xl text-[#C5A880] font-bold leading-[0.8] pr-2 pt-1" style={{ fontFamily: "Playfair Display, serif" }}>
+                     {selectedDest.description.charAt(0)}
+                   </span>
+                   {selectedDest.description.substring(1)}
+                </p>
+
+                {/* History */}
+                <div className="mb-6">
+                  <h4 className="text-[#C5A880] text-[10px] font-mono tracking-widest uppercase mb-3 border-b border-[#C5A880]/20 pb-2">
+                    History
+                  </h4>
+                  <p className="text-white/60 text-sm leading-relaxed font-light">
+                    {selectedDest.history}
+                  </p>
+                </div>
+
+                {/* Attractions */}
+                <div className="mb-6">
+                  <h4 className="text-[#C5A880] text-[10px] font-mono tracking-widest uppercase mb-3 border-b border-[#C5A880]/20 pb-2">
+                    Key Attractions
+                  </h4>
+                  <ul className="flex flex-col gap-4">
+                    {selectedDest.attractions.map((attr, i) => (
+                      <li key={i} className="bg-white/5 border border-white/5 p-3 rounded-xl">
+                        <h5 className="text-white text-sm font-semibold mb-1" style={{ fontFamily: "Playfair Display, serif" }}>{attr.name}</h5>
+                        <p className="text-white/60 text-xs leading-relaxed font-light">{attr.desc}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Highlights */}
+                <div className="mb-6">
+                  <h4 className="text-[#C5A880] text-[10px] font-mono tracking-widest uppercase mb-3 border-b border-[#C5A880]/20 pb-2">
+                    Highlights
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDest.highlights.map((h, i) => (
+                      <span key={i} className="text-[10px] px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 font-mono">
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tips Block */}
+                <div
+                  className="rounded-xl p-5 mb-2"
+                  style={{ background: "#1A1012", border: "1px solid rgba(255,255,255,0.05)" }}
+                >
+                  <span
+                    className="text-[9px] tracking-widest uppercase block mb-2"
+                    style={{ color: `${categoryMeta[selectedDest.category]?.color || "#C5A880"}80`, fontFamily: "DM Mono, monospace" }}
+                  >
+                    TRAVEL TIP 💡
+                  </span>
+                  <p
+                    className="italic text-sm leading-relaxed"
+                    style={{ fontFamily: "Playfair Display, serif", color: "rgba(226,212,201,0.9)" }}
+                  >
+                    "{selectedDest.tips}"
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
     </div>
   );
 }

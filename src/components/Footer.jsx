@@ -1,27 +1,29 @@
+import { Link } from "react-router-dom";
+
 const footerSections = {
   Explore: [
-    { label: "Home",          page: "home" },
-    { label: "Sacred Temples",page: "temples" },
-    { label: "Golden Beaches",page: "beaches" },
-    { label: "Wildlife & Forest", page: "forest" },
-    { label: "Rich Heritage", page: "heritage" },
-    { label: "Personalities", page: "personalities" },
+    { label: "Home",          path: "/" },
+    { label: "Sacred Temples",path: "/temples" },
+    { label: "Golden Beaches",path: "/beaches" },
+    { label: "Wildlife & Forest", path: "/forest" },
+    { label: "Rich Heritage", path: "/heritage" },
+    { label: "Personalities", path: "/personalities" },
   ],
   Destinations: [
-    { label: "Ahmedabad",       page: "heritage" },
-    { label: "Somnath",         page: "temples" },
-    { label: "Gir Forest",      page: "forest" },
-    { label: "Mandvi Beach",    page: "beaches" },
-    { label: "Dholavira",       page: "heritage" },
-    { label: "Rann of Kutch",   page: "home" },
+    { label: "Ahmedabad",       path: "/heritage" },
+    { label: "Somnath",         path: "/temples" },
+    { label: "Gir Forest",      path: "/forest" },
+    { label: "Mandvi Beach",    path: "/beaches" },
+    { label: "Dholavira",       path: "/heritage" },
+    { label: "Rann of Kutch",   path: "/" },
   ],
   Travel: [
-    { label: "Best Time to Visit", page: "home" },
-    { label: "How to Reach",       page: "home" },
-    { label: "Local Cuisine",      page: "home" },
-    { label: "Navratri Festival",  page: "home" },
-    { label: "Rann Utsav",         page: "home" },
-    { label: "Accommodation",      page: "home" },
+    { label: "Best Time to Visit", path: "/when-to-visit" },
+    { label: "How to Reach",       path: "/when-to-visit" },
+    { label: "Local Cuisine",      path: "/" },
+    { label: "Navratri Festival",  path: "/" },
+    { label: "Rann Utsav",         path: "/" },
+    { label: "Accommodation",      path: "/" },
   ],
 };
 
@@ -64,13 +66,8 @@ const socialLinks = [
   },
 ];
 
-export default function Footer({ onNavigate }) {
+export default function Footer() {
   const year = new Date().getFullYear();
-
-  const go = (page) => {
-    onNavigate(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
 
   return (
     <footer
@@ -87,9 +84,9 @@ export default function Footer({ onNavigate }) {
         <div className="flex flex-col lg:flex-row gap-10 mb-14 justify-between">
           {/* Brand Column */}
           <div className="w-full lg:w-2/5">
-            <button
-              onClick={() => go("home")}
-              className="flex items-center gap-3 group mb-6 cursor-pointer focus:outline-none"
+            <Link
+              to="/"
+              className="flex items-center gap-3 group mb-6 focus:outline-none"
               aria-label="Gujarat Tourism Home"
             >
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#800020] to-[#C5A880] flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
@@ -99,7 +96,7 @@ export default function Footer({ onNavigate }) {
                 <div className="text-gold-shimmer text-xl font-bold" style={{ fontFamily: "Playfair Display, serif" }}>Gujarat Tourism</div>
                 <div className="text-white/35 text-xs tracking-[0.22em] uppercase mt-0.5" style={{ fontFamily: "DM Mono, monospace" }}>The Land of Legends</div>
               </div>
-            </button>
+            </Link>
 
             <p className="text-white/45 text-sm leading-relaxed mb-8 max-w-sm font-light">
               Discover the vibrant tapestry of Gujarat — where ancient heritage meets stunning 
@@ -134,13 +131,13 @@ export default function Footer({ onNavigate }) {
                 <ul className="flex flex-col gap-2.5">
                   {links.map((link) => (
                     <li key={link.label}>
-                      <button
-                        onClick={() => go(link.page)}
+                      <Link
+                        to={link.path}
                         className="text-white/40 hover:text-[#C5A880] text-sm transition-all duration-200 hover:translate-x-1 inline-flex text-left items-center gap-1 group focus:outline-none font-light"
                       >
                         <span className="opacity-0 group-hover:opacity-100 text-[#C5A880] text-xs transition-opacity duration-200">›</span>
                         {link.label}
-                      </button>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -149,37 +146,83 @@ export default function Footer({ onNavigate }) {
           </div>
         </div>
 
-        {/* ── Contact / Quick Support Strip ── */}
-        <div className="relative bg-white/[0.02] border border-white/6 rounded-2xl p-6 md:p-8 mb-10 overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-[#800020] via-[#C5A880] to-[#008080]" />
-          <div>
-            <h4 className="text-white font-bold text-lg mb-1" style={{ fontFamily: "Playfair Display, serif" }}>
-              Need Help Planning Your Trip?
+        {/* ── Feedback & Improvement Hub ── */}
+        <div className="relative bg-[#150A0C] border-t border-white/5 rounded-2xl p-6 md:p-8 mb-10 overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#C5A880] to-transparent opacity-30" />
+          
+          <div className="max-w-md">
+            <h4 className="text-[#C5A880] font-bold text-xl md:text-2xl mb-2" style={{ fontFamily: "Playfair Display, serif" }}>
+              Help Us Refine The Journey
             </h4>
-            <p className="text-white/35 text-sm font-light">Contact our tourism experts for personalized guidance.</p>
+            <p className="text-white/60 text-sm leading-relaxed font-light">
+              Spotted a data bug? Want to suggest an update or add a new cultural spot? Connect directly with our team to improve the experience.
+            </p>
           </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-            <button className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#C5A880]/40 rounded-xl px-5 py-3 text-sm text-white transition-colors font-light group focus:outline-none">
-              <span className="text-[#C5A880] group-hover:scale-110 transition-transform">📞</span>
-              Toll Free: 1800 200 5080
-            </button>
-            <button className="flex items-center justify-center gap-2 bg-[#C5A880] hover:bg-[#D4B68A] text-[#120B0C] rounded-xl px-5 py-3 text-sm font-bold transition-colors focus:outline-none shadow-lg">
-              <span className="text-[#120B0C]">✉️</span>
-              Email Support
-            </button>
+          
+          <div className="flex flex-col md:flex-row gap-6 w-full lg:w-auto">
+            {/* WhatsApp Card */}
+            <a 
+              href="https://wa.me/918980238802" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group flex-1 bg-[#1C1113] border border-white/5 p-5 rounded-2xl transition-all duration-300 hover:border-[#C5A880]/30 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(197,168,128,0.1)] focus:outline-none flex flex-col justify-center"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#25D366]">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.082 19.165c-1.385.001-2.744-.359-3.922-1.04l-.282-.162-2.918.765.783-2.843-.177-.282c-.742-1.186-1.134-2.553-1.136-3.955.002-4.105 3.341-7.441 7.452-7.443 1.99.001 3.861.777 5.268 2.185 1.407 1.407 2.183 3.279 2.182 5.267-.002 4.106-3.341 7.443-7.448 7.445z" />
+                  </svg>
+                </div>
+                <span className="text-white font-semibold text-sm">Message for Quick Edits</span>
+              </div>
+              <div className="text-white/70 font-mono text-sm mt-1 group-hover:text-[#C5A880] transition-colors">+91 8980238802</div>
+            </a>
+            
+            {/* Email Card */}
+            <a 
+              href="mailto:tirth.rathod94@gmail.com"
+              className="group flex-1 bg-[#1C1113] border border-white/5 p-5 rounded-2xl transition-all duration-300 hover:border-[#C5A880]/30 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(197,168,128,0.1)] focus:outline-none flex flex-col justify-center"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-[#C5A880]/10 flex items-center justify-center text-[#C5A880]">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <span className="text-white font-semibold text-sm">Official Improvements Desk</span>
+              </div>
+              <div className="text-white/70 font-mono text-sm mt-1 group-hover:text-[#C5A880] transition-colors break-all">tirth.rathod94@gmail.com</div>
+            </a>
           </div>
         </div>
 
         {/* ── Bottom Bar ── */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-white/[0.06]">
-          <p className="text-white/25 text-xs font-light" style={{ fontFamily: "DM Mono, monospace" }}>
-            © {year} Gujarat Tourism. All rights reserved. | Crafted with ❤️ for Incredible India
-          </p>
-          <div className="flex gap-6">
-            {["Privacy Policy", "Terms of Use", "Sitemap"].map((item) => (
-              <a key={item} href="#" className="text-white/25 hover:text-[#C5A880] text-xs transition-colors duration-200 font-light">
-                {item}
-              </a>
+          <div className="flex flex-col items-center sm:items-start gap-1.5">
+            <p className="text-white/25 text-xs font-light" style={{ fontFamily: "DM Mono, monospace" }}>
+              © {year} Gujarat Tourism. All rights reserved.
+            </p>
+            <p className="text-white/25 text-xs font-light" style={{ fontFamily: "DM Mono, monospace" }}>
+              Crafted with ❤️ by M-Three Pixel for Incredible India
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center sm:justify-end gap-x-6 gap-y-2">
+            {[
+              { label: "About Us", path: "/about-us" },
+              { label: "Contact Us", path: "/contact-us" },
+              { label: "Privacy Policy", path: "/privacy-policy" },
+              { label: "Terms & Conditions", path: "/terms-and-conditions" },
+              { label: "Disclaimer", path: "/disclaimer" },
+            ].map((item) => (
+              <Link 
+                key={item.label} 
+                to={item.path} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-white/25 hover:text-[#C5A880] text-xs transition-colors duration-200 font-light whitespace-nowrap"
+              >
+                {item.label}
+              </Link>
             ))}
           </div>
         </div>

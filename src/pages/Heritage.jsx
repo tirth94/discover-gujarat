@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { heritageSites, timeline, filters, livingTraditions } from "../data/heritageData";
 
@@ -33,6 +34,22 @@ function Reveal({ children, delay = 0, className = "" }) {
 export default function Heritage() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeTraditionPopup, setActiveTraditionPopup] = useState(null);
+  const [searchParams] = useSearchParams();
+
+  /* ── Deep-link scroll from search ── */
+  useEffect(() => {
+    const targetId = searchParams.get("highlight");
+    if (!targetId) return;
+    const timer = setTimeout(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight-pulse");
+        setTimeout(() => el.classList.remove("highlight-pulse"), 2500);
+      }
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   // Disable scroll when popup is open
   useEffect(() => {

@@ -2,6 +2,7 @@
    FOREST PAGE — Gujarat Tourism
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { wildlife, conservationFacts, tabs, tabMap } from "../data/forestData";
 
@@ -129,6 +130,22 @@ function Reveal({ children, delay = 0, className = "" }) {
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Forest() {
   const [activeTab, setActiveTab] = useState("all");
+  const [searchParams] = useSearchParams();
+
+  /* ── Deep-link scroll from search ── */
+  useEffect(() => {
+    const targetId = searchParams.get("highlight");
+    if (!targetId) return;
+    const timer = setTimeout(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight-pulse");
+        setTimeout(() => el.classList.remove("highlight-pulse"), 2500);
+      }
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   const filtered = activeTab === "all"
     ? wildlife

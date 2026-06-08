@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { experiences } from "../data/experiencesData";
 import ExperiencePopup from "../components/experiences/ExperiencePopup";
 
@@ -114,7 +115,8 @@ function RevealOnScroll({ children, delay = 0, className = "" }) {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
    HIGHLIGHT SLIDER (Full-Width)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-function HighlightSlider({ items, onNavigate }) {
+function HighlightSlider({ items }) {
+  const navigate = useNavigate();
   const [active, setActive] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const timerRef = useRef(null);
@@ -178,7 +180,7 @@ function HighlightSlider({ items, onNavigate }) {
             {item.desc}
           </p>
           <button
-            onClick={() => onNavigate(item.page)}
+            onClick={() => navigate(`/${item.page === 'home' ? '' : item.page}`)}
             className="inline-flex items-center gap-2 text-sm font-semibold text-white px-6 py-3 rounded-full transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
             style={{
               background: "linear-gradient(135deg, #800020, #C5A880)",
@@ -247,7 +249,8 @@ function HighlightSlider({ items, onNavigate }) {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━
    HOME PAGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Home({ onNavigate }) {
+export default function Home() {
+  const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [heroLoaded, setHeroLoaded] = useState(false);
@@ -282,6 +285,16 @@ export default function Home({ onNavigate }) {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return;
 
+    // ── Page key → URL path map ──
+    const pageToPath = {
+      destinations: "/destinations",
+      temples:      "/temples",
+      beaches:      "/beaches",
+      forest:       "/forest",
+      heritage:     "/heritage",
+      personalities:"/personalities",
+    };
+
     // 1. Check for exact or partial name match
     let match = searchIndex.find(item => item.name.toLowerCase().includes(q));
     
@@ -291,17 +304,19 @@ export default function Home({ onNavigate }) {
     }
 
     if (match) {
-      onNavigate(match.page, match.targetId);
+      const path = pageToPath[match.page] ?? `/${match.page}`;
+      // Encode target element ID as search param for deep-link scroll
+      navigate(`${path}?highlight=${encodeURIComponent(match.targetId)}`);
       return;
     }
 
     // 3. Generic fallback routing
-    if (q.includes("temple") || q.includes("shrine") || q.includes("somnath")) onNavigate("temples");
-    else if (q.includes("beach") || q.includes("coast") || q.includes("mandvi")) onNavigate("beaches");
-    else if (q.includes("forest") || q.includes("gir") || q.includes("lion")) onNavigate("forest");
-    else if (q.includes("heritage") || q.includes("unesco") || q.includes("rani")) onNavigate("heritage");
-    else if (q.includes("person") || q.includes("leader") || q.includes("gandhi")) onNavigate("personalities");
-    else onNavigate("destinations");
+    if (q.includes("temple") || q.includes("shrine") || q.includes("somnath")) navigate("/temples");
+    else if (q.includes("beach") || q.includes("coast") || q.includes("mandvi")) navigate("/beaches");
+    else if (q.includes("forest") || q.includes("gir") || q.includes("lion")) navigate("/forest");
+    else if (q.includes("heritage") || q.includes("unesco") || q.includes("rani")) navigate("/heritage");
+    else if (q.includes("person") || q.includes("leader") || q.includes("gandhi")) navigate("/personalities");
+    else navigate("/destinations");
   };
 
   return (
@@ -457,7 +472,7 @@ export default function Home({ onNavigate }) {
           >
             <button
               id="hero-cta-explore"
-              onClick={() => onNavigate("temples")}
+              onClick={() => navigate("/destinations")}
               className="group inline-flex items-center gap-2.5 text-white font-semibold text-sm py-4 px-9 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1"
               style={{
                 background: "linear-gradient(135deg, #800020, #C5A880)",
@@ -472,7 +487,7 @@ export default function Home({ onNavigate }) {
             </button>
             <button
               id="hero-cta-heritage"
-              onClick={() => onNavigate("heritage")}
+              onClick={() => navigate("/heritage")}
               className="group inline-flex items-center gap-2.5 font-semibold text-sm py-4 px-9 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:bg-white/5"
               style={{
                 color: "#C5A880",
@@ -550,7 +565,7 @@ export default function Home({ onNavigate }) {
             <RevealOnScroll key={cat.id} delay={i * 100}>
               <button
                 id={`category-card-${cat.id}`}
-                onClick={() => onNavigate(cat.page)}
+                onClick={() => navigate(`/${cat.page === 'home' ? '' : cat.page}`)}
                 className="group relative overflow-hidden rounded-3xl text-left cursor-pointer focus:outline-none w-full"
                 style={{ height: "360px" }}
               >
@@ -631,7 +646,7 @@ export default function Home({ onNavigate }) {
             <button
               key={cat.id}
               id={`category-card-mobile-${cat.id}`}
-              onClick={() => onNavigate(cat.page)}
+              onClick={() => navigate(`/${cat.page === 'home' ? '' : cat.page}`)}
               className="snap-start flex-shrink-0 relative overflow-hidden rounded-2xl text-left cursor-pointer focus:outline-none"
               style={{ width: "75vw", maxWidth: "300px", height: "340px" }}
             >
@@ -679,7 +694,7 @@ export default function Home({ onNavigate }) {
               {highlights.map((h, i) => (
                 <button
                   key={h.title}
-                  onClick={() => onNavigate(h.page)}
+                  onClick={() => navigate(`/${h.page === 'home' ? '' : h.page}`)}
                   className="group relative overflow-hidden rounded-2xl text-left focus:outline-none transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
                   style={{ height: "400px", border: "1px solid rgba(255,255,255,0.05)" }}
                 >
@@ -706,7 +721,7 @@ export default function Home({ onNavigate }) {
 
             {/* Mobile Slider */}
             <div className="md:hidden">
-              <HighlightSlider items={highlights} onNavigate={onNavigate} />
+              <HighlightSlider items={highlights} />
             </div>
           </RevealOnScroll>
         </div>
@@ -729,7 +744,7 @@ export default function Home({ onNavigate }) {
               From the pioneering maritime dockyards of the Indus Valley Civilization to the non-violent revolution that shook the British Empire, discover the chronological milestones that forged the modern identity of Gujarat.
             </p>
             <button
-              onClick={() => onNavigate("history")}
+              onClick={() => navigate("/history")}
               className="group inline-flex items-center justify-center gap-3 text-white font-semibold text-sm sm:text-base py-4 px-8 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1 w-full sm:w-auto"
               style={{
                 background: "linear-gradient(135deg, rgba(197,168,128,0.2), rgba(197,168,128,0.05))",
@@ -1001,7 +1016,7 @@ export default function Home({ onNavigate }) {
           <RevealOnScroll delay={200}>
             <div className="flex justify-center mt-10">
               <button
-                onClick={() => onNavigate("whentovisit")}
+                onClick={() => navigate("/when-to-visit")}
                 className="btn-gold inline-flex items-center justify-center gap-2 w-full sm:w-auto px-10 py-4"
               >
                 See Full Details
@@ -1160,7 +1175,7 @@ export default function Home({ onNavigate }) {
                 <div className="flex flex-col sm:flex-row gap-5 justify-center w-full sm:w-auto">
                   <button
                     id="cta-start-exploring"
-                    onClick={() => onNavigate("temples")}
+                    onClick={() => navigate("/destinations")}
                     className="group relative overflow-hidden inline-flex items-center justify-center gap-3 text-white font-semibold text-sm py-4 px-10 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1"
                     style={{
                       background: "linear-gradient(135deg, #800020, #a00028)",
@@ -1177,7 +1192,7 @@ export default function Home({ onNavigate }) {
                   
                   <button
                     id="cta-personalities"
-                    onClick={() => onNavigate("personalities")}
+                    onClick={() => navigate("/personalities")}
                     className="group inline-flex items-center justify-center gap-3 font-semibold text-sm py-4 px-10 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1"
                     style={{ 
                       color: "#C5A880", 

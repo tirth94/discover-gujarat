@@ -12,7 +12,7 @@ import { personalities } from "../data/personalitiesData";
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    PERSONALITIES PAGE
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-export default function Personalities({ onNavigate }) {
+export default function Personalities() {
   const [searchQuery,    setSearchQuery]    = useState("");
   const [hoveredCardId,  setHoveredCardId]  = useState(null);
   const [selectedPerson, setSelectedPerson] = useState(null);

@@ -1,20 +1,23 @@
 import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navLinks = [
-  { label: "Home",          page: "home",          icon: "⌂" },
-  { label: "Destinations",  page: "destinations",  icon: "🗺️" },
-  { label: "Temples",       page: "temples",        icon: "🛕" },
-  { label: "Beaches",       page: "beaches",        icon: "🏖️" },
-  { label: "Forest",        page: "forest",         icon: "🦁" },
-  { label: "Heritage",      page: "heritage",       icon: "🏛️" },
-  { label: "Personalities", page: "personalities",  icon: "👤" },
-  { label: "Travel Logs",   page: "blog",           icon: "📝" },
+  { label: "Home",          path: "/",              icon: "⌂" },
+  { label: "Destinations",  path: "/destinations",  icon: "🗺️" },
+  { label: "Temples",       path: "/temples",        icon: "🛕" },
+  { label: "Beaches",       path: "/beaches",        icon: "🏖️" },
+  { label: "Forest",        path: "/forest",         icon: "🦁" },
+  { label: "Heritage",      path: "/heritage",       icon: "🏛️" },
+  { label: "Personalities", path: "/personalities",  icon: "👤" },
+  { label: "Travel Logs",   path: "/blog",           icon: "📝" },
 ];
 
-export default function Navbar({ currentPage, onNavigate }) {
+export default function Navbar() {
   const [scrolled,  setScrolled]  = useState(false);
   const [menuOpen,  setMenuOpen]  = useState(false);
   const drawerRef = useRef(null);
+  const location  = useLocation();
+  const navigate  = useNavigate();
 
   /* ── Scroll listener ── */
   useEffect(() => {
@@ -36,11 +39,19 @@ export default function Navbar({ currentPage, onNavigate }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const handleNav = (page) => {
-    onNavigate(page);
+  /* ── Close drawer on route change ── */
+  useEffect(() => {
     setMenuOpen(false);
+  }, [location.pathname]);
+
+  const handleLogoClick = () => {
+    navigate("/");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  /* Active check — home "/" needs exact match */
+  const isActive = (path) =>
+    path === "/" ? location.pathname === "/" : location.pathname === path;
 
   return (
     <>
@@ -59,7 +70,7 @@ export default function Navbar({ currentPage, onNavigate }) {
           {/* ── Logo ── */}
           <button
             id="nav-logo"
-            onClick={() => handleNav("home")}
+            onClick={handleLogoClick}
             aria-label="Gujarat Tourism — Home"
             className="flex items-center gap-3 group cursor-pointer focus:outline-none"
           >
@@ -91,15 +102,15 @@ export default function Navbar({ currentPage, onNavigate }) {
           {/* ── Desktop Nav Links ── */}
           <ul className="hidden md:flex items-center gap-1 m-0 p-0 list-none" role="list">
             {navLinks.map((link) => {
-              const isActive = currentPage === link.page;
+              const active = isActive(link.path);
               return (
-                <li key={link.page}>
-                  <button
-                    id={`nav-link-${link.page}`}
-                    onClick={() => handleNav(link.page)}
-                    aria-current={isActive ? "page" : undefined}
-                    className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full cursor-pointer focus:outline-none group ${
-                      isActive
+                <li key={link.path}>
+                  <Link
+                    id={`nav-link-${link.path.replace(/\//g, "") || "home"}`}
+                    to={link.path}
+                    aria-current={active ? "page" : undefined}
+                    className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full cursor-pointer focus:outline-none group inline-flex items-center ${
+                      active
                         ? "text-amber-300 bg-amber-500/10 border border-amber-500/25"
                         : "text-white/65 hover:text-white hover:bg-white/5 border border-transparent"
                     }`}
@@ -108,16 +119,14 @@ export default function Navbar({ currentPage, onNavigate }) {
                     {/* Animated gold underline */}
                     <span
                       className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-px bg-amber-400 transition-all duration-300 ${
-                        isActive ? "w-4" : "w-0 group-hover:w-4"
+                        active ? "w-4" : "w-0 group-hover:w-4"
                       }`}
                     />
-                  </button>
+                  </Link>
                 </li>
               );
             })}
           </ul>
-
-          {/* ── Desktop CTA Removed ── */}
 
           {/* ── Mobile Hamburger ── */}
           <button
@@ -186,34 +195,34 @@ export default function Navbar({ currentPage, onNavigate }) {
         {/* Nav Links */}
         <nav className="flex-1 p-6 flex flex-col gap-2 overflow-y-auto no-scrollbar" aria-label="Mobile navigation">
           {navLinks.map((link, i) => {
-            const isActive = currentPage === link.page;
+            const active = isActive(link.path);
             return (
-              <button
-                key={link.page}
-                id={`mobile-nav-${link.page}`}
-                onClick={() => handleNav(link.page)}
-                aria-current={isActive ? "page" : undefined}
+              <Link
+                key={link.path}
+                id={`mobile-nav-${link.path.replace(/\//g, "") || "home"}`}
+                to={link.path}
+                aria-current={active ? "page" : undefined}
                 style={{
                   fontFamily: "Playfair Display, serif",
                   animationDelay: menuOpen ? `${i * 60}ms` : "0ms",
                 }}
-                className={`flex items-center gap-4 w-full text-left px-5 py-4 rounded-2xl text-base font-medium transition-all duration-300 cursor-pointer focus:outline-none ${
-                  isActive
+                className={`flex items-center gap-4 w-full text-left px-5 py-4 rounded-2xl text-base font-medium transition-all duration-300 ${
+                  active
                     ? "bg-[#C5A880]/10 text-[#C5A880] border border-[#C5A880]/25 shadow-lg"
                     : "text-white/60 hover:bg-white/5 hover:text-white border border-transparent"
                 }`}
               >
                 <span className="text-xl w-7 text-center">{link.icon}</span>
                 <span>{link.label}</span>
-                {isActive && (
+                {active && (
                   <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#C5A880]" />
                 )}
-              </button>
+              </Link>
             );
           })}
         </nav>
 
-        {/* Footer info at bottom (CTA removed) */}
+        {/* Footer info at bottom */}
         <div className="p-6 border-t border-white/5">
           <p className="text-white/20 text-xs text-center mt-3 tracking-wider" style={{ fontFamily: "DM Mono, monospace" }}>
             GUJARAT TOURISM © {new Date().getFullYear()}

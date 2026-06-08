@@ -76,10 +76,10 @@ export default function Timeline() {
         }
 
         .timeline-stage {
-          max-width: 1000px;
+          max-width: 2000px;
           margin: 0 auto;
           position: relative;
-          padding-top: 2rem;
+          padding-top: 1rem;
         }
 
         .timeline-spine {
@@ -98,7 +98,7 @@ export default function Timeline() {
           display: flex;
           align-items: center;
           width: 100%;
-          margin-bottom: 6rem;
+          margin-bottom: 3rem;
           z-index: 10;
           opacity: 0;
           transform: translateY(40px);
@@ -179,10 +179,10 @@ export default function Timeline() {
 
         .timeline-card {
           width: 100%;
-          max-width: 440px;
+          max-width: 600px;
           background: rgba(21, 10, 12, 0.95);
           border: 1px solid rgba(255, 255, 255, 0.05);
-          padding: 2.5rem;
+          padding: 1.5rem;
           border-radius: 1.5rem;
           position: relative;
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
@@ -191,6 +191,7 @@ export default function Timeline() {
         }
 
         .timeline-card:hover {
+        cursor:pointer;
           transform: translateY(-5px);
           border-color: rgba(197, 168, 128, 0.3);
           box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(197, 168, 128, 0.1);

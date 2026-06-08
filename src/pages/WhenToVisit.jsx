@@ -3,6 +3,7 @@
    Gujarat Tourism — Complete Seasonal Travel Guide
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ── Reveal on scroll helper ── */
 function Reveal({ children, delay = 0, className = "" }) {
@@ -32,7 +33,8 @@ function Reveal({ children, delay = 0, className = "" }) {
 /* ── Data ── */
 import { seasons, quickFacts, regionGuide } from "../data/whenToVisitData";
 
-export default function WhenToVisit({ onNavigate }) {
+export default function WhenToVisit() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("peak");
   const activeSeason = seasons.find(s => s.id === activeTab);
 
@@ -470,7 +472,7 @@ export default function WhenToVisit({ onNavigate }) {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
-                  onClick={() => onNavigate("home")}
+                  onClick={() => navigate("/destinations")}
                   className="group inline-flex items-center gap-2.5 text-white font-semibold text-sm py-4 px-10 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1"
                   style={{
                     background: "linear-gradient(135deg, #800020, #C5A880)",
@@ -484,7 +486,7 @@ export default function WhenToVisit({ onNavigate }) {
                   </svg>
                 </button>
                 <button
-                  onClick={() => onNavigate("heritage")}
+                  onClick={() => navigate("/heritage")}
                   className="group inline-flex items-center gap-2.5 font-semibold text-sm py-4 px-10 rounded-full cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:bg-white/5"
                   style={{ color: "#C5A880", border: "1px solid rgba(197,168,128,0.3)" }}
                 >

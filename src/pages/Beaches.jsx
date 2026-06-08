@@ -3,6 +3,7 @@
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { beaches } from "../data/beachesData";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Navigation, Autoplay } from "swiper/modules";
@@ -147,6 +148,23 @@ function Reveal({ children, delay = 0, className = "" }) {
    BEACHES PAGE
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 export default function Beaches() {
+  const [searchParams] = useSearchParams();
+
+  /* ── Deep-link scroll from search ── */
+  useEffect(() => {
+    const targetId = searchParams.get("highlight");
+    if (!targetId) return;
+    const timer = setTimeout(() => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("highlight-pulse");
+        setTimeout(() => el.classList.remove("highlight-pulse"), 2500);
+      }
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchParams]);
+
   return (
     <div id="beaches-page" className="page-enter" style={{ background: "#1E0F12" }}>
 
